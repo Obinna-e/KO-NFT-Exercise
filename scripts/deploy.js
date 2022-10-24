@@ -16,10 +16,13 @@ async function main() {
 
     console.log(`Deployer balance: ${ethers.utils.formatEther(deployerBalance)}`);
 
-    if (Number(deployerBalance) < (Number(deploymentPrice) / 1000000000)) {
+    console.log( `Deployment price:  ${ethers.utils.formatEther(deploymentPrice)}`);
+
+
+    if (Number(deployerBalance) < Number(deploymentPrice)) {
         throw new Error("You dont have enough balance to deploy.");
      }
-    //  // Start deployment, returning a promise that resolves to a contract object
+     // Start deployment, returning a promise that resolves to a contract object
      const myNFT = await KnownNft.deploy();
      await myNFT.deployed();
      console.log("Contract deployed to address:", myNFT.address);
