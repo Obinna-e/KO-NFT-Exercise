@@ -9,7 +9,8 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract KnownNft is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
-    
+    uint256 public maxSupply = 100;
+    uint public userLimit = 3;
 
     Counters.Counter private _tokenIdCounter;
 
@@ -17,10 +18,13 @@ contract KnownNft is ERC721, ERC721Enumerable, Ownable {
 
     }
 
-    function safeMint(address to) public onlyOwner {
+    function publicMint() public payable{
+        require(msg.value == 0.01 ether, "Incorrect minting price");
+        require(_tokenIdCounter.current() < maxSupply, "No more NFTs available");
+        
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
-        _safeMint(to, tokenId);
+        _safeMint(msg.sender, tokenId);
     }
 
     // The following functions are overrides required by Solidity.
