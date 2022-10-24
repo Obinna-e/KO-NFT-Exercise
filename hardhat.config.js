@@ -6,8 +6,11 @@ const { API_URL, PRIVATE_KEY } = process.env;
 
 module.exports = {
   solidity: "0.8.4",
-  defaultNetwork: "georli",
+  defaultNetwork: "hardhat",
   networks: {
+    hardhat: {
+
+    },
   georli: {
       url: API_URL,
       accounts: [PRIVATE_KEY]

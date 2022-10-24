@@ -70,5 +70,34 @@ describe("KnownNft", function() {
         });
 
         });
+
+        describe('withdraw', function() {
+
+            it("Should be reverted because caller is not owner", async function() {
+                await expect(knownNft.connect(addr1).withdraw(addr1.address)).to.be.revertedWith('caller is not the owner');
+            });
+
+            it("Should withdraw funds by the owner", async function() {
+  
+                await knownNft.connect(owner).withdraw(owner.address);
+            });
+
+            it("Should change funds in contract", async function() {
+                
+                
+                await knownNft.connect(addr1).publicMint({value: ethers.utils.parseEther("0.01")});
+                await knownNft.connect(addr1).publicMint({value: ethers.utils.parseEther("0.01")});
+                await knownNft.connect(addr1).publicMint({value: ethers.utils.parseEther("0.01")});
+                await knownNft.connect(addr2).publicMint({value: ethers.utils.parseEther("0.01")});
+                await knownNft.connect(addr2).publicMint({value: ethers.utils.parseEther("0.01")});
+                await knownNft.connect(addr2).publicMint({value: ethers.utils.parseEther("0.01")});
+                const contractFunds = await ethers.provider.getBalance(knownNft.address);
+
+                expect(
+                     contractFunds
+                ).to.be.equal(ethers.utils.parseEther("0.06"));
+
+            });
+        });
     });
    
