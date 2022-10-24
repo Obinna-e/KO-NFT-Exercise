@@ -10,7 +10,8 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract KnownNft is ERC721, ERC721Enumerable, Ownable {
     using Counters for Counters.Counter;
     uint256 public maxSupply = 100;
-    uint public userLimit = 3;
+    uint256 public userLimit = 3;
+    uint256 public balance = address(this).balance;
 
     Counters.Counter private _tokenIdCounter;
 
@@ -18,9 +19,19 @@ contract KnownNft is ERC721, ERC721Enumerable, Ownable {
 
     }
 
+    //@notice: function to withdraw ether gotten from publicMint
+    function withdraw(address _addr) external onlyOwner{
+        payable(_addr).transfer(balance);
+    }
+
+    /*
+    * @notice: Should implement a whitelist here to prevent same user 
+    from going beyond minting limit with different wallets
+     */
     function publicMint() public payable{
         require(msg.value == 0.01 ether, "Incorrect minting price");
         require(_tokenIdCounter.current() < maxSupply, "No more NFTs available");
+        require(balanceOf(msg.sender) < userLimit, "User has reached minting limit");
         
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
