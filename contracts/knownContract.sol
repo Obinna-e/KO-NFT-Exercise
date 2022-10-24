@@ -12,11 +12,13 @@ contract KnownNft is ERC721, ERC721Enumerable, Ownable {
     uint256 public maxSupply = 100;
     uint256 public userLimit = 3;
     uint256 public balance = address(this).balance;
+    uint256 public deployDate;
 
     Counters.Counter private _tokenIdCounter;
 
     constructor() ERC721("KnownNft", "KNWN") {
-
+        //@notice: Could manually set this, but using timestamp at contract deployment
+        deployDate = block.timestamp;
     }
 
     //@notice: function to withdraw ether gotten from publicMint
@@ -32,7 +34,7 @@ contract KnownNft is ERC721, ERC721Enumerable, Ownable {
         require(msg.value == 0.01 ether, "Incorrect minting price");
         require(_tokenIdCounter.current() < maxSupply, "No more NFTs available");
         require(balanceOf(msg.sender) < userLimit, "User has reached minting limit");
-        
+        require(block.timestamp <= deployDate + 1 weeks, "Minting window is now closed");
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(msg.sender, tokenId);
