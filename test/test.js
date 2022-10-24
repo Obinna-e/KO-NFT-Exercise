@@ -1,6 +1,6 @@
 const {expect} = require("chai");
 const { hexStripZeros } = require("ethers/lib/utils");
-const { ethers } = require("hardhat");
+const { ethers, network } = require("hardhat");
 const { isCallTrace } = require("hardhat/internal/hardhat-network/stack-traces/message-trace");
 
 describe("KnownNft", function() {
@@ -53,6 +53,20 @@ describe("KnownNft", function() {
             await knownNft.connect(addr1).publicMint({value: ethers.utils.parseEther("0.01")});
             expect(await knownNft.balanceOf(addr1.address)).to.equal(3);
             await expect(knownNft.connect(addr1).publicMint({value: ethers.utils.parseEther("0.01")})).to.revertedWith('User has reached minting limit');
+        });
+
+        it("Should only mint within window", async function() {
+            
+            await network.provider.send("evm_increaseTime", [3600]);
+            expect(await knownNft.balanceOf(addr1.address)).to.be.equal(0);
+            
+    
+            await knownNft.connect(addr1).publicMint({value: ethers.utils.parseEther("0.01")});
+            expect(await knownNft.balanceOf(addr1.address)).to.equal(1);
+
+            //Increased current time by slightly above a week (1.09 weeks)
+            await network.provider.send("evm_increaseTime", [659232]);
+            await expect(knownNft.connect(addr1).publicMint({value: ethers.utils.parseEther("0.01")})).to.revertedWith('Minting window is now closed');
         });
 
         });
