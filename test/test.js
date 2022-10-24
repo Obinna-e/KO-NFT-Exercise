@@ -30,15 +30,31 @@ describe("KnownNft", function() {
     
 
     describe('Mint', function() {
-        it("Should only mint 3 nfts for 0.01 ether", async function() {
+        it("Should mint 1 nft for 0.01 ether", async function() {
        
 
             expect(await knownNft.balanceOf(addr1.address)).to.be.equal(0);
             
     
-            const tx = await knownNft.connect(addr1).publicMint({value: ethers.utils.parseEther("0.01")});
-            expect(await knownNft.balanceOf(addr1.address)).to.be.equal(1);
+            await knownNft.connect(addr1).publicMint({value: ethers.utils.parseEther("0.01")});
+            expect(await knownNft.balanceOf(addr1.address)).to.equal(1);
         });
+        
+        it("Should only mint 3 nfts", async function() {
+       
+
+            expect(await knownNft.balanceOf(addr1.address)).to.be.equal(0);
+            
+    
+            await knownNft.connect(addr1).publicMint({value: ethers.utils.parseEther("0.01")});
+            expect(await knownNft.balanceOf(addr1.address)).to.equal(1);
+            await knownNft.connect(addr1).publicMint({value: ethers.utils.parseEther("0.01")});
+            expect(await knownNft.balanceOf(addr1.address)).to.equal(2);
+            await knownNft.connect(addr1).publicMint({value: ethers.utils.parseEther("0.01")});
+            expect(await knownNft.balanceOf(addr1.address)).to.equal(3);
+            await expect(knownNft.connect(addr1).publicMint({value: ethers.utils.parseEther("0.01")})).to.revertedWith('User has reached minting limit');
+        });
+
         });
     });
    
